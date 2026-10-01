@@ -25,7 +25,43 @@ package hong;
  */
 public class 사칙연산 {
     public int solution(String arr[]) {
-        // TODO: 구현
-        return 0;
+        int[] num = new int[arr.length / 2 + 1];
+        int[] op = new int[arr.length / 2];
+        for (int i = 0; i < arr.length; i++) {
+            if (i % 2 == 0) {
+                num[i / 2] = Integer.parseInt(arr[i]);
+            } else {
+                op[i / 2] = arr[i].equals("+") ? 1 : -1;
+            }
+        }
+        int[][] max = new int[num.length][num.length];
+        int[][] min = new int[num.length][num.length];
+
+        for (int j = 0; j < num.length; j++) {
+            min[j][j] = num[j];
+            max[j][j] = num[j];
+        }
+        for (int i = 1; i < num.length; i++) {
+            for (int j = 0; j < num.length; j++) {
+                if (j + i >= num.length) {
+                    continue;
+                }
+
+                int maxadd = Integer.MIN_VALUE;
+                int minadd = Integer.MAX_VALUE;
+                for (int k = j; k < j + i; k++) {
+                    if (op[k] == 1) {
+                        maxadd = Math.max(maxadd, max[j][k] + max[k + 1][j + i]);
+                        minadd = Math.min(minadd, min[j][k] + min[k + 1][j + i]);
+                    } else {
+                        maxadd = Math.max(maxadd, max[j][k] - min[k + 1][j + i]);
+                        minadd = Math.min(minadd, min[j][k] - max[k + 1][j + i]);
+                    }
+                }
+                min[j][j + i] = minadd;
+                max[j][j + i] = maxadd;
+            }
+        }
+        return max[0][num.length - 1];
     }
 }
